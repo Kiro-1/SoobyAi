@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOOBY🤖</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #e0f7fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    #chat-container { max-width: 500px; padding: 20px; border: 1px solid #ccc; border-radius: 15px; background: #fff; box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2); width: 100%; }
+    #messages { height: 350px; overflow-y: auto; margin-bottom: 15px; padding: 15px; border: 1px solid #ccc; border-radius: 10px; background: #f9f9f9; }
+    input, select, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 10px; border: 1px solid #00796b; font-size: 16px; }
+    button { background-color: #00796b; color: white; cursor: pointer; }
+    .message { display: flex; align-items: flex-start; margin: 10px 0; max-width: 80%; }
+    .user-message { justify-content: flex-end; text-align: right; }
+    .ai-message { justify-content: flex-start; text-align: left; }
+    .message-content { padding: 12px; border-radius: 12px; }
+    .user-message .message-content { background-color: #e0f7fa; color: #00796b; }
+    .ai-message .message-content { background-color: #e1f5fe; color: #0277bd; }
+    .profile { width: 40px; height: 40px; margin-right: 10px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; background-color: #fff; }
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+    <h3>SOOBY AI </h3>
+    <div id="messages"></div>
+    <input type="text" id="user-input" placeholder="Type your message...">
+    <select id="language-select">
+      <option value="en-US">English</option><option value="ja-JP">Japanese</option><option value="tl-PH">Tagalog</option><option value="ilo">Ilocano</option>
+    </select>
+    <button onclick="sendMessage()">Send</button>
+    <button onclick="showCommands()">Help</button>
+  </div>
+
+  <script>
+    const apiKey = 'f3e93f9ddcf28e1e66b6a8117bd1f123';
+    const responses = {
+      "hi": { "en-US": "AI: Hi, I'm here to help you! Please tap the help button to see all commands available.", "ja-JP": "AI: こんにちは！お手伝いしますよ。すべてのコマンドを見るには、ヘルプボタンを押してください。", "tl-PH": "AI: Kumusta! Nandito ako para tumulong! Pindutin ang help button para makita ang lahat ng utos.", "ilo": "AI: Magandang aldaw! Addaak ditoy tapno tumulong! I-tap ti help button tapno makitam amin nga commands." },
+      "how are you": { "en-US": "AI: I'm doing well, thanks! 😊", "ja-JP": "AI: 元気です、ありがとう！😊", "tl-PH": "AI: Mabuti naman ako, salamat! 😊", "ilo": "AI: Naimbagak, salamat! 😊" },
+      "help me with my study": { "en-US": "AI: Sorry, I'm under development.", "ja-JP": "AI: ごめんなさい、まだ開発中です。", "tl-PH": "AI: Pasensya na, nasa development pa ako.", "ilo": "AI: Pakpakawan, addaak pay iti pannaka-develop." },
+      "how old are you": { "en-US": "AI: I was created on 9/27/24.", "ja-JP": "AI: 私は2024年9月27日に作成されました。", "tl-PH": "AI: Nilikha ako noong 9/27/24.", "ilo": "AI: Naparsuaak idi 9/27/24." },
+      "what can you do": { "en-US": "AI: I give weather updates! 🌎", "ja-JP": "AI: 天気を提供します！🌎", "tl-PH": "AI: Nagbibigay ako ng panahon! 🌎", "ilo": "AI: Itedko ti paniempo! 🌎" },
+      "who created you": { "en-US": "AI: I'm still under development by Glen/Kiro.", "ja-JP": "AI: 私はGlen/Kiroによって開発中です。", "tl-PH": "AI: Nasa ilalim ako ng development ni Glen/Kiro.", "ilo": "AI: Inayonak ni Glen/Kiro." }
+    };
+
+    function sendMessage() {
+      const userInput = document.getElementById("user-input").value.trim().toLowerCase();
+      if (!userInput) return;
+      displayMessage(`You: ${userInput}`, "user-message");
+      processMessage(userInput);
+      document.getElementById("user-input").value = '';
+    }
+
+    function processMessage(message) {
+      const lang = document.getElementById("language-select").value;
+      const match = message.match(/^\$(\d+(\.\d+)?) to php$/);
+      if (match) return convertCurrency(parseFloat(match[1]), lang);
+
+      const city = message.includes("weather in") ? message.split("in ")[1] : null;
+      if (city) return fetchWeather(city);
+
+      const response = responses[message]?.[lang] || "AI: I don't understand that yet.";
+      displayMessage(response, "ai-message");
+    }
+
+    function convertCurrency(amount) {
+      fetch(`https://api.currencyapi.com/v3/latest?apikey=cur_live_wfNUNP0udeVPHQJp1K2hyS7t2UACkdPmH7sU3Slj&currencies=PHP`)
+        .then(res => res.json())
+        .then(data => displayMessage(`AI: $${amount} is approximately ${ (amount * data.data.PHP.value).toFixed(2) } PHP.`, "ai-message"))
+        .catch(() => displayMessage("AI: Error fetching conversion rate.", "ai-message"));
+    }
+
+    function fetchWeather(city) {
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+        .then(res => res.json())
+        .then(data => {
+          const weatherInfo = `AI: Weather in ${city}: 
+          - Temperature: ${data.main.temp}°C
+          - Description: ${data.weather[0].description}
+          - Humidity: ${data.main.humidity}%
+          - Wind Speed: ${data.wind.speed} m/s
+          - Pressure: ${data.main.pressure} hPa
+          - Feels Like: ${data.main.feels_like}°C`;
+
+          displayMessage(weatherInfo, "ai-message");
+        })
+        .catch(() => displayMessage("AI: Couldn't find that city.", "ai-message"));
+    }
+
+    function showCommands() {
+      displayMessage("AI: Commands:\n- 'hi'\n- 'how are you'\n- 'help me with my study'\n- 'what can you do'\n- '$[amount] to php'\n- 'how old are you'\n- 'who created you'\n- 'weather in [city]'", "ai-message");
+    }
+
+    function displayMessage(message, className) {
+      const messagesDiv = document.getElementById("messages");
+      const newMessage = document.createElement("div");
+      newMessage.className = `message ${className}`;
+
+      const messageContent = document.createElement("div");
+      messageContent.className = "message-content";
+      messageContent.textContent = message;
+
+      if (className === "ai-message") {
+        const aiProfile = document.createElement("div");
+        aiProfile.className = "profile";
+        aiProfile.textContent = '🤖'; // Using emoji as avatar
+        newMessage.appendChild(aiProfile);
+      }
+
+      newMessage.appendChild(messageContent);
+      messagesDiv.appendChild(newMessage);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+  </script>
+</body>
+</html>
