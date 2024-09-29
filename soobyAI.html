@@ -99,6 +99,175 @@
         })
         .catch(() => displayMessage("AI: Couldn't find that city.", "ai-message"));
     }
+    function processMessage(message) {
+    const lang = document.getElementById("language-select").value;
+
+    // Currency conversion check
+    const currencyMatch = message.match(/^\$(\d+(\.\d+)?) to php$/);
+    if (currencyMatch) {
+        const amount = parseFloat(currencyMatch[1]);
+        convertCurrency(amount, lang);
+        return;
+    }
+
+    // Recipe query check
+    if (message.toLowerCase().includes("recipe for ")) {
+        const recipeQuery = message.toLowerCase().split("recipe for ")[1].trim();
+        fetchRecipe(recipeQuery);
+        return;
+    }
+
+    // Weather query check
+    const city = message.includes("weather in") ? message.split("in ")[1] : null;
+    if (city) {
+        fetchWeather(city);
+        return;
+    }
+
+    // Check for news queries
+    if (message.toLowerCase().includes("news")) {
+        const keyword = message.toLowerCase().split("news")[1]?.trim() || "Philippines";
+        const query = keyword.length > 0 ? keyword : "Philippines"; // Default to Philippines if no keyword is found
+
+        fetch(`https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&apiKey=a274ff0902bd4781aebf29746524ccaa`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.articles && data.articles.length > 0) {
+                    let newsResponse = data.articles.slice(0, 5).map(article => {
+                        return `${article.title} - ${article.source.name}: ${article.url}`;
+                    }).join("\n");
+                    displayMessage(`AI: Here are the latest news updates about ${query}:\n${newsResponse}`, "ai-message");
+                } else {
+                    displayMessage(`AI: I couldn't find any news articles about ${query}.`, "ai-message");
+                }
+            })
+            .catch(() => displayMessage("AI: Sorry, there was an error fetching the news.", "ai-message"));
+        return;
+    }
+
+    // Check for Wikipedia requests
+    if (message.toLowerCase().includes("tell me about") || message.toLowerCase().includes("info about")) {
+        const topic = message.split("about ")[1]?.trim();
+        if (topic) {
+            fetchWikipediaInfo(topic);
+            return;
+        }
+    }
+
+    // Check for advice requests
+    if (message.toLowerCase().includes("give me advice") || message.toLowerCase().includes("advice")) {
+        fetchAdvice();
+        return;
+    }
+
+    // Check for joke requests
+    if (message.toLowerCase().includes("tell me a joke") || message.toLowerCase().includes("joke")) {
+        fetchJoke();
+        return;
+    }
+
+    // Check for book/subject queries
+    if (message.toLowerCase().includes("books about") || message.toLowerCase().includes("subject")) {
+        const subject = message.split("about ")[1]?.trim();
+        fetchBooksBySubject(subject);
+        return;
+    }
+
+    // Default response if no other conditions are met
+    const defaultResponses = {
+        "hi": responses["hi"][lang],
+        "how are you": responses["how are you"][lang],
+        "help me with my study": responses["help me with my study"][lang],
+        "how old are you": responses["how old are you"][lang],
+        "what can you do": responses["what can you do"][lang],
+        "who created you": responses["who created you"][lang],
+        "kupal": responses["kupal"][lang],
+        "hahaha": responses["hahaha"][lang],
+        "ai": responses["ai"][lang],
+        "elon musk net worth": responses["elon musk net worth"][lang],
+        "description": responses["description"][lang],
+        "introduce yourself": responses["introduce yourself"][lang],
+        "goodmorning": responses["goodmorning"][lang],
+        "crush moba ako": responses["crush moba ako"][lang],
+        "bye": responses["bye"][lang],
+        "suggest a movie": responses["suggest a movie"][lang],
+        "thankyou": responses["thankyou"][lang],
+        "friend": responses["friend"][lang],
+        "how to use the commands?": responses["how to use the commands?"][lang]
+    };
+
+    const response = defaultResponses[message] || "AI: I'm not sure how to help with that. Can you ask about news, recipes, weather, advice, jokes, or Wikipedia information?";
+    displayMessage(response, "ai-message");
+}
+
+function fetchWikipediaInfo(topic) {
+    const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&format=json&origin=*&titles=${encodeURIComponent(topic)}`;
+
+    fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+            const page = Object.values(data.query.pages)[0]; // Get the first (and usually only) page
+            if (page && page.extract) {
+                displayMessage(`AI: Here's some information about ${topic}:\n${page.extract}`, "ai-message");
+            } else {
+                displayMessage("AI: Sorry, I couldn't find any information about that topic.", "ai-message");
+            }
+        })
+        .catch(() => displayMessage("AI: Sorry, there was an error fetching information from Wikipedia.", "ai-message"));
+}
+
+// New function to fetch advice
+function fetchAdvice() {
+    fetch("https://api.adviceslip.com/advice")
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.slip) {
+                displayMessage(`AI: Here's a piece of advice for you:\n${data.slip.advice}`, "ai-message");
+            } else {
+                displayMessage("AI: Sorry, I couldn't fetch any advice at the moment.", "ai-message");
+            }
+        })
+        .catch(() => displayMessage("AI: Sorry, there was an error fetching advice.", "ai-message"));
+}
+
+// New function to fetch a joke
+function fetchJoke() {
+    fetch("https://v2.jokeapi.dev/joke/Any")
+        .then(res => res.json())
+        .then(data => {
+            if (data) {
+                let jokeResponse;
+                if (data.type === "single") {
+                    jokeResponse = data.joke;
+                } else {
+                    jokeResponse = `${data.setup}\n${data.delivery}`;
+                }
+                displayMessage(`AI: Here's a joke for you:\n${jokeResponse}`, "ai-message");
+            } else {
+                displayMessage("AI: Sorry, I couldn't fetch any jokes at the moment.", "ai-message");
+            }
+        })
+        .catch(() => displayMessage("AI: Sorry, there was an error fetching jokes.", "ai-message"));
+}
+
+// New function to fetch books by subject
+function fetchBooksBySubject(subject) {
+    const apiUrl = `http://openlibrary.org/subjects/${encodeURIComponent(subject)}.json`;
+
+    fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+            if (data.works && data.works.length > 0) {
+                const booksResponse = data.works.slice(0, 5).map(work => {
+                    return `${work.title} by ${work.authors.map(author => author.name).join(", ")}`;
+                }).join("\n");
+                displayMessage(`AI: Here are some books about ${subject}:\n${booksResponse}`, "ai-message");
+            } else {
+                displayMessage(`AI: Sorry, I couldn't find any books about ${subject}.`, "ai-message");
+            }
+        })
+        .catch(() => displayMessage("AI: Sorry, there was an error fetching books.", "ai-message"));
+}
 
     function showCommands() {
       displayMessage("AI:heres my Commands:\n- 'hi'\n- 'how are you'\n- 'help me with my study'\n- 'what can you do'\n- '$[amount] to php'\n- 'how old are you'\n- 'who created you'\n- 'weather in [city]'\n" + "-'kupal'\n" + "-'suggest a movie'\n" + "-'crush moba ako'\n" + " -'friend'\n" +"-'how to use the commands?'",
