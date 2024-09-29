@@ -39,7 +39,21 @@
       "help me with my study": { "en-US": "AI: Sorry, I'm under development.", "ja-JP": "AI: ごめんなさい、まだ開発中です。", "tl-PH": "AI: Pasensya na, nasa development pa ako.", "ilo": "AI: Pakpakawan, addaak pay iti pannaka-develop." },
       "how old are you": { "en-US": "AI: I was created on 9/27/24.", "ja-JP": "AI: 私は2024年9月27日に作成されました。", "tl-PH": "AI: Nilikha ako noong 9/27/24.", "ilo": "AI: Naparsuaak idi 9/27/24." },
       "what can you do": { "en-US": "AI: I give weather updates! 🌎", "ja-JP": "AI: 天気を提供します！🌎", "tl-PH": "AI: Nagbibigay ako ng panahon! 🌎", "ilo": "AI: Itedko ti paniempo! 🌎" },
-      "who created you": { "en-US": "AI: I'm still under development by Glen/Kiro.", "ja-JP": "AI: 私はGlen/Kiroによって開発中です。", "tl-PH": "AI: Nasa ilalim ako ng development ni Glen/Kiro.", "ilo": "AI: Inayonak ni Glen/Kiro." }
+      "who created you": { "en-US": "AI: I'm still under development by Glen/Kiro.", "ja-JP": "AI: 私はGlen/Kiroによって開発中です。", "tl-PH": "AI: Nasa ilalim ako ng development ni Glen/Kiro.", "ilo": "AI: Inayonak ni Glen/Kiro." },
+      "kupal": { "en-US": "AI: MAS KUPAL KAPA SAKIN." },
+      "hahaha": { "en-US": "AI: WALA NAMAN NAKAKATAWA TAWA KA NG TAWA."},
+      "ai": { "en-US": "AI: ANO YUN BOSSING."},
+      "elon musk net worth": { "en-US": "AI: $239 billion."},
+      "description": { "en-US": "AI: hi im sooby ai im under development im here to help you some basics task."},
+      "introduce yourself": { "en-US": "AI hi im sooby im program to help people some basic task" },
+      "tell me about your boss": { "en-US": "Ai: Sorry bro i can't help you with that thats a personal question"},
+      "goodmorning": {"en-US": "AI: goodmorning too have a good day po🥰"},
+      "crush moba ako": {"en-US": "AI:sorry but i dont have feelings 🙃"},
+      "bye": {"en-US": "AI: bye comeback here if you need my help 🥸"},
+      "suggest a movie": {"en-US": "AI: sure? what movie do you like do you want action movie? i suggest you watch ip man or do you like drama? i suggest you to watch bussiness proposal "},
+      "thankyou": {"en-US": "AI: your welcome my friend 😻"},
+      "friend": {"en-US": "AI: helo my new friend whats your name?😻"},
+      "how to use the commands?": {"en-US": "AI: heres how to use my commands first you need to choose what command you will use for example friend etc then type friend and send and the bot will automatically reply to you 💻"}
     };
 
     function sendMessage() {
@@ -87,7 +101,9 @@
     }
 
     function showCommands() {
-      displayMessage("AI: Commands:\n- 'hi'\n- 'how are you'\n- 'help me with my study'\n- 'what can you do'\n- '$[amount] to php'\n- 'how old are you'\n- 'who created you'\n- 'weather in [city]'", "ai-message");
+      displayMessage("AI:heres my Commands:\n- 'hi'\n- 'how are you'\n- 'help me with my study'\n- 'what can you do'\n- '$[amount] to php'\n- 'how old are you'\n- 'who created you'\n- 'weather in [city]'\n" + "-'kupal'\n" + "-'suggest a movie'\n" + "-'crush moba ako'\n" + " -'friend'\n" +"-'how to use the commands?'",
+      "ai-message"
+      );
     }
 
     function displayMessage(message, className) {
