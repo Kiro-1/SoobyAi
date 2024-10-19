@@ -18,7 +18,7 @@
     .ai-message .message-content { background-color: #e1f5fe; color: #0277bd; }
     .profile { width: 40px; height: 40px; margin-right: 10px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 24px; background-color: #fff; }
   </style>
-       </body><script src="zooby.js"></script>
+       </body><script src="y.js"></script>
  
 </head>
 <body>
@@ -54,10 +54,23 @@
       "bye": {"en-US": "AI: bye comeback here if you need my help 🥸"},
       "suggest a movie": {"en-US": "AI: sure? what movie do you like do you want action movie? i suggest you watch ip man or do you like drama? i suggest you to watch bussiness proposal "},
       "thankyou": {"en-US": "AI: your welcome my friend 😻"},
+      "sooby": {"en-US": "AI: yes?? whyy do you need my help right? 😉"},
       "friend": {"en-US": "AI: helo my new friend whats your name?😻"},
-      "how to use the commands?": {"en-US": "AI: heres how to use my commands first you need to choose what command you will use for example friend etc then type friend and send and the bot will automatically reply to you 💻"}
+      "how to use the commands?": {"en-US": "AI: heres how to use my commands first you need to choose what command you will use for example friend etc then type friend and send and the bot will automatically reply to you 💻"},
+      "pano ka ginawa": {"en-US": "AI: ako ay ginawa sa pamamagit ng code"},
+      "admin talk": {"en-US": "AI' helo boss what can i help you 🥰just ask me anything boss"},
+      "ok": {"en-US": "AI: ok see yah ,"},
+      "give me pick up lines": {"en-US": "AI: sure heres the pick up lines for you! Are you loan because you've got my interest."},
+      "how smart are you?": {"en-US": "AI: i have 95% iQ and im still under development."},
+      "who is smarter chat gpt or you?": {"en-US": "Ai:chat gpt and sooby ai have different features we ai develop to help  human some basic task." },
+      "goodbye": {"en-US": "Ai: goodbye get back here if you need some help! 😉"},
+      "tell me a story": {"en-US": "Ai: sure heres a true story for you In 1521, Lapu-Lapu, a chieftain of Mactan, refused to submit to Spanish rule when Ferdinand Magellan tried to convert him to Christianity. Angered, Magellan led a force to attack Mactan, but Lapu-Lapu and his 1,500 warriors were ready. In a fierce battle on the shores, Lapu-Lapu’s men defeated the Spanish, killing Magellan and forcing his army to retreat. This victory made Lapu-Lapu the first Filipino hero, celebrated for his defiance against foreign invasion."},
+      "nice": {"en-US": "Ai: gland you feel nice what topic do you like?😜"},
+      "tanginamo": {"en-US": "Ai: oh your saying bad words but im ai i can't feel anything🙂"},
+      "give me the article 3 section 1":
+      {"en-US": "Ai: sure here's the article 3 section 1 of the Philippines No person shall be deprived of life, liberty, or property without due process of law, nor shall any person be denied the equal protection of the laws"} 
+      
     };
-
     function sendMessage() {
       const userInput = document.getElementById("user-input").value.trim().toLowerCase();
       if (!userInput) return;
@@ -168,13 +181,6 @@
         return;
     }
 
-    // Check for book/subject queries
-    if (message.toLowerCase().includes("books about") || message.toLowerCase().includes("subject")) {
-        const subject = message.split("about ")[1]?.trim();
-        fetchBooksBySubject(subject);
-        return;
-    }
-
     // Default response if no other conditions are met
     const defaultResponses = {
         "hi": responses["hi"][lang],
@@ -195,9 +201,30 @@
         "suggest a movie": responses["suggest a movie"][lang],
         "thankyou": responses["thankyou"][lang],
         "friend": responses["friend"][lang],
-        "how to use the commands?": responses["how to use the commands?"][lang]
-    };
-
+        "how to use the commands?": responses["how to use the commands?"][lang],
+        "admin talk":
+        responses["admin talk"] [lang],
+        "pano ka ginawa":
+        responses["pano ka ginawa"] [lang],
+        "ok":
+        responses["ok"] [lang],
+        "give me pick up lines":
+        responses["give me pick up lines"] [lang],
+        "how smart are you?":
+        responses ["how smart are you?"] [lang],
+        "who is smarter chat gpt or you?": 
+        responses ["who is smarter chat gpt or you?"] [lang],
+        "goodbye": 
+        responses ["goodbye"] [lang],
+        "tell me a story": 
+        responses ["tell me a story"] [lang],
+        "nice":
+        responses ["nice"] [lang],
+        "tanginamo": 
+        responses ["tanginamo"] [lang],
+        "give me the article 3 section 1":
+        responses ["give me the article 3 section 1"] [lang]
+        };
     const response = defaultResponses[message] || "AI: I'm not sure how to help with that. Can you ask about news, recipes, weather, advice, jokes, or Wikipedia information?";
     displayMessage(response, "ai-message");
 }
@@ -251,26 +278,6 @@ function fetchJoke() {
         })
         .catch(() => displayMessage("AI: Sorry, there was an error fetching jokes.", "ai-message"));
 }
-
-// New function to fetch books by subject
-function fetchBooksBySubject(subject) {
-    const apiUrl = `http://openlibrary.org/subjects/${encodeURIComponent(subject)}.json`;
-
-    fetch(apiUrl)
-        .then(res => res.json())
-        .then(data => {
-            if (data.works && data.works.length > 0) {
-                const booksResponse = data.works.slice(0, 5).map(work => {
-                    return `${work.title} by ${work.authors.map(author => author.name).join(", ")}`;
-                }).join("\n");
-                displayMessage(`AI: Here are some books about ${subject}:\n${booksResponse}`, "ai-message");
-            } else {
-                displayMessage(`AI: Sorry, I couldn't find any books about ${subject}.`, "ai-message");
-            }
-        })
-        .catch(() => displayMessage("AI: Sorry, there was an error fetching books.", "ai-message"));
-}
-
     function showCommands() {
       displayMessage("AI:heres my Commands:\n- 'hi'\n- 'how are you'\n- 'help me with my study'\n- 'what can you do'\n- '$[amount] to php'\n- 'how old are you'\n- 'who created you'\n- 'weather in [city]'\n" + "-'kupal'\n" + "-'suggest a movie'\n" + "-'crush moba ako'\n" + " -'friend'\n" +"-'how to use the commands?'",
       "ai-message"
